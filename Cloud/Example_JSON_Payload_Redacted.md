@@ -17,5 +17,4 @@ This is a redacted example of the data format used by the Emergency Exit Light H
   "Test": "30m",
   "Lux": 154.2,
   "SigS": 15,
-  "Status": "Pass"
 }
