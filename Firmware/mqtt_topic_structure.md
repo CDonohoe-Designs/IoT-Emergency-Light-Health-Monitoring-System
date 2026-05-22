@@ -44,3 +44,16 @@ Example format:
 
 ```text
 <unique_device_id>
+
+##Prototype Command Payloads
+
+The prototype firmware used simple command payloads to control test states.
+
+#Payload	Intended Action
+0	Start 30-minute discharge test
+1	Start 3-hour discharge test
+2	Start daily / short monitoring check
+3	Mark 30-minute test complete / return relay to normal state
+4	Diagnostic / service command in prototype firmware
+5	Mark daily test complete / return relay to normal state
+restart	Restart the ESP32 device
