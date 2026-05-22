@@ -1,6 +1,6 @@
 # Emergency Exit Light Health Checker
 
-I developed an IoT retrofit module I developed during my freelance engineering period to automate emergency exit-light testing and remote reporting.
+I developed an IoT retrofit module I developed to automate emergency exit-light testing and remote reporting.
 
 ![Assembled Emergency Exit Light Health Checker prototype](Hardware/Images/Assembled_Prototype_Board.jpg)
 
