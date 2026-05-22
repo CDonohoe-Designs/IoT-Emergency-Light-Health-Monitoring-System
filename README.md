@@ -1,6 +1,9 @@
 # Emergency Exit Light Health Checker
 
-An IoT retrofit module I developed during my freelance engineering period to automate emergency exit-light testing and remote reporting.
+I developed an IoT retrofit module I developed during my freelance engineering period to automate emergency exit-light testing and remote reporting.
+
+![Assembled Emergency Exit Light Health Checker prototype](Hardware/Images/Assembled_Prototype_Board.jpg)
+
 
 The system was designed to be retrofitted into an existing emergency light unit. Test cycles could be initiated remotely over the cellular GPRS link using cloud-side scheduling/AWS IoT MQTT messaging. Once triggered, the ESP32 controlled a relay to place the fitting into test mode, measured the light output during the battery discharge period, and returned lux level, signal strength, timestamp and pass/fail data to the cloud backend for reporting.
 
