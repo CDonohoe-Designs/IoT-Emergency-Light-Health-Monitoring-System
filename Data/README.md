@@ -20,7 +20,7 @@ The prototype recorded information such as:
 - Test type
 - Date and time
 - Light-level reading
-- Cellular signal strength
+- Mobile signal strength (RSSI)
 - Pass/fail style result information
 
 ## Privacy Note
