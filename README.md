@@ -2,7 +2,7 @@
 
 An IoT retrofit module I developed during my freelance engineering period to automate emergency exit-light testing and remote reporting.
 
-The system was designed to be fitted into an existing emergency light unit. It can switch the light fitting into test mode, measure the light output during the battery discharge period, and send the result to a cloud backend for reporting.
+The system was designed to be retrofitted into an existing emergency light unit. Test cycles could be initiated remotely over the cellular GPRS link using cloud-side scheduling/AWS IoT MQTT messaging. Once triggered, the ESP32 controlled a relay to place the fitting into test mode, measured the light output during the battery discharge period, and returned lux level, signal strength, timestamp and pass/fail data to the cloud backend for reporting.
 
 > Portfolio note: this repository is provided as evidence of my independent electronic design work. It is not intended as a public build guide or certified safety product.
 
