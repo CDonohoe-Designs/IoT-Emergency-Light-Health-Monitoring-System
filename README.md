@@ -113,6 +113,7 @@ Example payload format:
   "Lux": 154.2,
   "SigS": 15
 }
+```
 ---
 ## Safety and Portfolio Note
 
