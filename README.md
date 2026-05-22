@@ -22,11 +22,7 @@ I designed a prototype health-check module that could automate this process by:
 
 ---
 
-## My Role
-
-I worked on the project as an independent/freelance electronic design engineer.
-
-My work included:
+## My work included:
 
 - system concept and architecture
 - schematic design
