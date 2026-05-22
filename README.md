@@ -37,6 +37,10 @@ I designed a prototype health-check module that could automate this process by:
 
 ---
 
+## Safety and Portfolio Note
+
+This project involved mains-voltage switching and was developed as a prototype/portfolio engineering project. The repository is provided as evidence of my independent electronic design work and is not intended as a certified product design, installation guide or safety-approved design package.
+
 ## System Overview
 
 The module monitors the health of an emergency exit light by placing the fitting into a controlled test state and measuring the resulting light output.
