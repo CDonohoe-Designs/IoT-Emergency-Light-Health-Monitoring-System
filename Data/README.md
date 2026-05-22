@@ -25,4 +25,4 @@ The prototype recorded information such as:
 
 ## Privacy Note
 
-The original dataset contained project-specific identifiers and device/customer information. The version included here has been redacted for public portfolio use.
+The original dataset contained project-specific identifiers. The version included here has been redacted for public portfolio use.
