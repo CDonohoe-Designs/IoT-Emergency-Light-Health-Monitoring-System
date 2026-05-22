@@ -7,8 +7,8 @@ This is a redacted example of the data format used by the Emergency Exit Light H
   "ID": "REDACTED_DEVICE_ID",
   "Cus": "REDACTED_CUSTOMER",
   "Loc": "REDACTED_LOCATION",
-  "Flr": "REDACTED_FLOOR",
-  "Num": "REDACTED_UNIT_NUMBER",
+  "Flr": "1",
+  "Num": "0001",
   "Time": "16:05:40+04",
   "Date": "22/04/22",
   "InstallDate": "REDACTED_INSTALL_DATE",
@@ -16,6 +16,6 @@ This is a redacted example of the data format used by the Emergency Exit Light H
   "Ver": "Prototype",
   "Test": "30m",
   "Lux": 154.2,
-  "SigS": 15
-  "Status": 15 Pass
+  "SigS": 15,
+  "Status": "Pass"
 }
