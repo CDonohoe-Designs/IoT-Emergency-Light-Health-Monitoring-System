@@ -1,35 +1,113 @@
 # Emergency Exit Light Health Checker
 
-## Overview
-Short 2–3 paragraph summary of what the project does.
+An IoT retrofit module I developed during my freelance engineering period to automate emergency exit-light testing and remote reporting.
 
-## Why I Built It
-Manual emergency light testing is time-consuming, so I designed a retrofit IoT module to automate the test and record the result.
+The system was designed to be fitted into an existing emergency light unit. It can switch the light fitting into test mode, measure the light output during the battery discharge period, and send the result to a cloud backend for reporting.
 
-## How It Works
-Normal mode: mains power passes through the relay to the exit light.  
-Test mode: the relay opens, the exit light runs from battery, the BH1750 measures lux, and the result is sent to AWS IoT.
+> Portfolio note: this repository is provided as evidence of my independent electronic design work. It is not intended as a public build guide or certified safety product.
 
-## Key Features
-- ESP32-based controller
-- SIM800L GPRS modem
-- BH1750 lux sensor
-- Relay-controlled mains test switching
-- AWS IoT / MQTT reporting
-- Sample pass/fail dataset
-- Custom PCB, Gerbers and panelised board evidence
+---
 
-## System Architecture
-Add your block diagram image here.
+## Project Summary
 
-## PCB Design
-Add PCB / Gerber / panelised board images here.
+Emergency exit lights normally require periodic testing to confirm that the internal battery can keep the fitting illuminated during a power-loss condition.
 
-## Sample Data
-Add the dataset image and JSON payload.
+I designed a prototype health-check module that could automate this process by:
 
-## Skills Demonstrated
-Hardware design, PCB layout, IoT, AWS, MQTT, cellular comms, sensor integration, data logging, and retrofit product development.
+- switching the fitting into test mode using a relay
+- measuring light output using a BH1750 light sensor
+- using an ESP32 as the main controller
+- sending test data over GPRS using a SIM800L modem
+- reporting lux level, signal strength, date/time and pass/fail result
+- supporting cloud-side processing using AWS IoT/MQTT services
 
-## Safety Note
-Mention that it involves 230 VAC and would need proper compliance/testing for real deployment.
+---
+
+## My Role
+
+I worked on the project as an independent/freelance electronic design engineer.
+
+My work included:
+
+- system concept and architecture
+- schematic design
+- PCB layout and manufacturing outputs
+- ESP32, SIM800L and BH1750 integration
+- relay-controlled emergency-light test switching
+- 5 V, 3.3 V and 4.1 V power sections
+- UART and I²C interfaces
+- prototype assembly and installation testing
+- AWS/MQTT reporting concept
+- example test dataset and reporting flow
+
+---
+
+## System Overview
+
+The module monitors the health of an emergency exit light by placing the fitting into a controlled test state and measuring the resulting light output.
+
+Typical test modes included:
+
+- short functional test
+- 30-minute discharge test
+- 3-hour discharge test
+
+The measured data was sent to the cloud and could be used to generate a pass/fail report.
+
+---
+
+## Hardware Overview
+
+Main hardware blocks:
+
+| Block | Description |
+|---|---|
+| Controller | ESP32 WROOM module |
+| Cellular modem | SIM800L GPRS module |
+| Light sensor | BH1750 digital lux sensor |
+| Switching | Relay-controlled AC test switching |
+| Power | AC/DC converter, 5 V rail, 3.3 V rail and 4.1 V modem rail |
+| Interfaces | UART, I²C, external GPIO/I²C connector |
+| Debug/programming | UART programming header, reset and boot buttons |
+
+---
+
+## PCB and Manufacturing Evidence
+
+The project includes evidence of:
+
+- schematic design
+- PCB top and bottom layers
+- Gerber/layer views
+- panelised PCB output
+- assembled prototype hardware
+- installed prototype inside an emergency light fitting
+
+Images and PDFs are included in the `Hardware/` and `Documentation/` folders.
+
+---
+
+## Cloud / Data Flow
+
+The prototype used a cloud reporting concept based around:
+
+- MQTT messaging
+- AWS IoT Core
+- AWS Lambda
+- IoT Analytics-style processing
+- stored test data
+- pass/fail report generation
+
+Example payload format:
+
+```json
+{
+  "ID": "REDACTED_DEVICE_ID",
+  "Cus": "REDACTED_CUSTOMER",
+  "Loc": "REDACTED_LOCATION",
+  "Time": "16:05:40+04",
+  "Date": "22/09/22",
+  "Test": "30m",
+  "Lux": 154.2,
+  "SigS": 15
+}
