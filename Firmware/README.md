@@ -1,36 +1,72 @@
+# Emergency Light Health Monitor — Firmware
 
-# Firmware
+This folder contains a cleaned-up portfolio version of firmware I originally developed for the emergency-light monitoring project.
 
-This folder documents the firmware architecture for my IoT Emergency Light Health Monitoring System.
+The original development code grew while I was integrating the modem, AWS IoT, light sensing, relay control and remote configuration. For the portfolio version I have simplified the structure, removed old experiments and removed all private credentials so the main behaviour is easier to follow.
 
-I developed the original prototype firmware using **Visual Studio Code** and **PlatformIO** for an **ESP32-based monitoring module**. I am not publishing the raw source code here because it was prototype firmware and contained project-specific credentials, cloud certificates and device configuration.
+## What the firmware does
 
-Instead, this section documents how my firmware was structured, what interfaces it used, and how it controlled the system.
+The ESP32:
 
-## Firmware Purpose
+- connects to the mobile network through a SIM800 modem;
+- connects securely to AWS IoT using MQTT;
+- measures emergency-light output using a BH1750 lux sensor;
+- controls a relay used to start and stop an emergency-light test;
+- publishes test status, lux level and installation information;
+- stores customer/location/floor/light information in ESP32 NVS;
+- accepts simple remote configuration and restart commands; and
+- provides a local Bluetooth diagnostic connection during bring-up.
 
-My firmware was responsible for controlling and monitoring the emergency-light test module. It handled:
+## Main program flow
 
-- BH1750 light sensor readings
-- Relay control for discharge testing
-- SIM800L cellular communication
-- MQTT reporting to AWS IoT Core
-- Test mode control for short, quarterly and annual checks
-- Local configuration storage on the ESP32
-- Status indication using LEDs
+```text
+setup
+  -> initialise hardware
+  -> load saved installation details
+  -> initialise modem
+  -> connect mobile network
+  -> connect AWS IoT / MQTT
 
-## Development Environment
+loop
+  -> check cellular connection
+  -> check MQTT connection
+  -> process MQTT messages
+```
 
-- MCU: ESP32
-- IDE: Visual Studio Code
-- Build system: PlatformIO
-- Framework: Arduino-style ESP32 firmware
-- Cellular modem: SIM800L
-- Cloud communication: MQTT to AWS IoT Core
-- Light sensor: BH1750 over I2C
-- Relay control: GPIO
-- Local storage: ESP32 Preferences / NVS
+I deliberately kept the public version simple. Most of the behaviour is contained in a few functions:
 
-## Note
+- `connectMobileNetwork()`
+- `connectMqtt()`
+- `handleDeviceCommand()`
+- `runLightTest()`
+- `publishTestResult()`
 
-The purpose of this folder is to show the firmware design intent and system behaviour without exposing prototype source code, private keys, certificates or project-specific configuration.
+## Test commands
+
+The common MQTT control topic uses simple numeric commands:
+
+| Command | Action |
+|---|---|
+| `0` | Start 30-minute test |
+| `1` | Start 3-hour test |
+| `2` | Start day test |
+| `3` | End 30-minute test |
+| `4` | End 3-hour test |
+| `5` | End day test |
+
+A separate device-specific topic is used for installation data such as location, customer, floor and light number.
+
+## Building the project
+
+The project uses **VS Code + PlatformIO** with the Arduino ESP32 framework.
+
+Before building:
+
+1. Copy `include/secrets.example.h` to `include/secrets.h`.
+2. Add the APN, AWS IoT endpoint, device certificate and private key to `secrets.h`.
+3. Keep `secrets.h` private. It is excluded by `.gitignore`.
+4. Keep `include/certificates.h` as the public root-CA trust-anchor file used by SSLClient.
+
+## Security note
+
+No working private key, AWS device certificate, broker credential or production APN is included in this portfolio version.

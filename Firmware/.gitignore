@@ -1,0 +1,12 @@
+.pio/
+.vscode/
+include/secrets.h
+
+# Never commit private credentials or certificates.
+*.key
+*.pem
+*.crt
+
+# Common local / generated files
+.DS_Store
+Thumbs.db
