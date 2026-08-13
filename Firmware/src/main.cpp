@@ -244,7 +244,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
     // The common control topic starts and stops the emergency-light tests.
     if (String(topic) == CONTROL_TOPIC) {
         if (message == "0") {
-            runLightTest("30min", true);
+            runLightTest("30m", true);
         }
         else if (message == "1") {
             runLightTest("3Hr", true);
