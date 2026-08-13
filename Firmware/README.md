@@ -12,10 +12,10 @@ The ESP32:
 - connects securely to AWS IoT using MQTT;
 - measures emergency-light output using a BH1750 lux sensor;
 - controls a relay used to start and stop an emergency-light test;
-- publishes test status, lux level and installation information;
+- publishes ux, signal strength, timestamp and test-state data and installation information;
 - stores customer/location/floor/light information in ESP32 NVS;
 - accepts simple remote configuration and restart commands; and
-- provides a local Bluetooth diagnostic connection during bring-up.
+
 
 ## Main program flow
 

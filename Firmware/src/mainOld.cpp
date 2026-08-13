@@ -23,6 +23,7 @@
 #include <SSLClient.h>
 #include <PubSubClient.h>
 #include <Preferences.h>
+#include <BluetoothSerial.h>
 #include <esp_system.h>
 
 #include "certificates.h"
@@ -57,6 +58,7 @@ PubSubClient mqtt(secureClient);
 
 BH1750 lightMeter;
 Preferences preferences;
+BluetoothSerial SerialBT;
 
 // -------------------------
 // Saved device information
@@ -119,6 +121,9 @@ void setup()
 
     Wire.begin(I2C_SDA, I2C_SCL);
     lightMeter.begin();
+
+    // I use Bluetooth as a simple local diagnostic link during bring-up.
+    SerialBT.begin("EmergencyLightMonitor");
 
     // I use the ESP32 hardware ID to give each installed unit a unique MQTT ID.
     deviceId = getDeviceId();
@@ -250,7 +255,7 @@ void mqttCallback(char* topic, byte* payload, unsigned int length)
             runLightTest("Day", true);
         }
         else if (message == "3") {
-            runLightTest("30m Test End", false);
+            runLightTest("30min Test End", false);
         }
         else if (message == "4") {
             runLightTest("3Hr Test End", false);

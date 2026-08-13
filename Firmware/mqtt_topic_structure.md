@@ -27,7 +27,7 @@ In my design, MQTT was used for:
 
 Each device used a generated unique ID so that individual emergency-light monitors could receive targeted commands.
 
-In the prototype firmware, I used the ESP32 Bluetooth MAC address as the basis for the unique device ID.
+In the prototype firmware, In the public prototype firmware I derive the device ID from the ESP32's eFuse hardware MAC/ID.
 
 For a production design, I would use a cleaner provisioning method where each device receives a controlled serial number or device certificate identity during manufacturing.
 
