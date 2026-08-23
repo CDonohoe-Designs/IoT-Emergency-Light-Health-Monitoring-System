@@ -1,42 +1,43 @@
 # Cloud / MQTT Reporting Flow
 
-This folder contains cloud-side evidence for my Emergency Exit Light Health Checker prototype.
+I used this folder to document the cloud-side reporting flow for my Emergency Exit Light Health Checker prototype.
 
-The system was designed to send test results from the retrofit hardware to a cloud backend using a cellular GPRS connection and an AWS IoT/MQTT-style reporting flow. The cloud side was used to receive test data, process scheduled test events, and support report generation.
+The prototype sends test measurements from the retrofit hardware over a cellular GPRS connection using MQTT. I used AWS IoT services to receive the data, support scheduled test control, process the incoming measurements and feed the reporting workflow.
 
-## Included Files
+## Included files
 
 | File | Description |
 |---|---|
-| `AWS_System_Overview.png` | Cloud architecture overview showing MQTT, AWS IoT Core, EventBridge, Lambda, IoT Analytics-style processing, data storage and reporting flow. |
-| `Example_JSON_Payload_Redacted.md` | Example of the test data packet sent from the device to the cloud backend, with customer/device details removed. |
+| `AWS_System_Overview.png` | My cloud architecture overview showing MQTT, AWS IoT Core, EventBridge, Lambda, IoT Analytics-style processing, data storage and reporting flow. |
+| `Example_JSON_Payload_Redacted.md` | Redacted example of the test-data packet published by the device. |
 
-## Cloud Flow Summary
+## Cloud flow
 
 My prototype cloud flow included:
 
-- remote test initiation using a scheduled/cloud-side trigger
-- cellular GPRS communication from the device
-- MQTT-style messaging into AWS IoT Core
-- AWS Lambda-style processing
-- IoT Analytics-style data handling
-- storage of test records
-- report generation using lux level, signal strength, timestamp, test type and pass/fail result
+- scheduled / cloud-side test initiation;
+- cellular GPRS communication from the device;
+- MQTT messaging into AWS IoT Core;
+- Lambda-style processing;
+- data handling / storage; and
+- report generation from lux level, signal strength, timestamp, test type and installation metadata.
 
-## Example Payload
+The device itself publishes measurement data. I treat **pass/fail evaluation as a cloud/reporting function** derived from those measurements rather than as a field generated directly by the ESP32 firmware.
 
-The device reported test data in a JSON-style format, including:
+## Example payload content
 
-- device ID
-- customer/site reference
-- test type
-- time and date
-- lux reading
-- signal strength
-- pass/fail status
+The device reports fields including:
 
-Public examples in this repository are redacted to remove customer names, device IDs, locations and account-specific details.
+- device ID;
+- customer / site reference;
+- floor / unit reference;
+- test type;
+- time and date;
+- lux reading; and
+- cellular signal quality.
 
-## Note
+Public examples are redacted to remove customer names, device IDs, locations and account-specific details.
 
-This folder is included as portfolio evidence of the cloud/MQTT reporting concept. It does not include private AWS credentials, certificates, endpoints or customer data.
+## Scope
+
+This folder is portfolio evidence of the MQTT / AWS IoT reporting concept I developed for the prototype. I do not publish private AWS credentials, device certificates, private keys, endpoints or customer data.
