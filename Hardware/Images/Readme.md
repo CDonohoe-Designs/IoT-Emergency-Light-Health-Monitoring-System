@@ -1,19 +1,19 @@
 # Prototype and Installation Images
 
-This folder contains photo evidence for my Emergency Exit Light Health Checker prototype.
+I use this folder to document the physical prototype and retrofit installation stage of my Emergency Exit Light Health Checker project.
 
-The images show the physical prototype board and how the health checker was retrofitted into an existing emergency exit light unit. This supports the schematic and PCB evidence elsewhere in the repository by showing that the design was built and tested as real hardware.
+The images show the assembled PCB and how I fitted the prototype into an existing emergency-light unit. They support the schematic and PCB evidence elsewhere in the repository by showing that the design progressed to real hardware.
 
-## Included Files
+## Included files
 
 | File | Description |
 |---|---|
 | `Assembled_Prototype_Board.jpg` | Photo of my assembled prototype PCB with the ESP32, plug-in SIM800L module, relay, AC/DC power section and antenna connection. |
-| `Installed_Retrofit_Prototype.pdf` | Image/PDF evidence showing the health checker installed inside an emergency exit light fitting. |
-| `Emergency_Light_Fitting.png` | Example emergency exit light fitting used to explain the retrofit concept. |
+| `ExitLight_v1.0Installed.pdf` | Installed-prototype evidence showing the health checker fitted inside an emergency-light unit. |
+| `Emergency_Light_Fitting.png` | Reference image used to explain the retrofit concept. |
 
-## Notes
+## Scope
 
-These images are included as portfolio evidence of the prototype and retrofit stage of the project.
+I include these images as portfolio evidence of the prototype and installation work.
 
-This was a prototype engineering project involving mains-voltage circuitry. The images are not intended as an installation guide or certified product documentation.
+The project involved mains-voltage circuitry, so the images should not be treated as an installation guide or certified product documentation.
