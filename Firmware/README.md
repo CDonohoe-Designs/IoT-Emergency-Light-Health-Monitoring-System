@@ -1,8 +1,8 @@
 # Emergency Light Health Monitor — Firmware
 
-This folder contains a cleaned-up portfolio version of firmware I originally developed for the emergency-light monitoring project.
+I developed this firmware for the ESP32-based Emergency Light Health Monitor prototype and later cleaned it into a simpler public portfolio version.
 
-The original development code grew while I was integrating the modem, AWS IoT, light sensing, relay control and remote configuration. For the portfolio version I have simplified the structure, removed old experiments and removed all private credentials so the main behaviour is easier to follow.
+The original development code grew while I was integrating the modem, AWS IoT, light sensing, relay control and remote configuration. For this repository I removed old experiments and private credentials so the main behaviour is easier to review.
 
 ## What the firmware does
 
@@ -11,11 +11,12 @@ The ESP32:
 - connects to the mobile network through a SIM800 modem;
 - connects securely to AWS IoT using MQTT;
 - measures emergency-light output using a BH1750 lux sensor;
-- controls a relay used to start and stop an emergency-light test;
-- publishes ux, signal strength, timestamp and test-state data and installation information;
-- stores customer/location/floor/light information in ESP32 NVS;
-- accepts simple remote configuration and restart commands; and
+- controls the relay used to start and stop an emergency-light test;
+- publishes lux, signal strength, timestamp, test-state and installation metadata;
+- stores customer / location / floor / light information in ESP32 NVS; and
+- accepts simple remote configuration and restart commands.
 
+The public firmware publishes measurement data. I treat **pass/fail evaluation as a cloud/reporting function** derived from those measurements rather than as a result calculated directly in the ESP32 code.
 
 ## Main program flow
 
@@ -33,7 +34,7 @@ loop
   -> process MQTT messages
 ```
 
-I deliberately kept the public version simple. Most of the behaviour is contained in a few functions:
+I kept the public version intentionally straightforward. Most of the behaviour is contained in:
 
 - `connectMobileNetwork()`
 - `connectMqtt()`
@@ -43,30 +44,38 @@ I deliberately kept the public version simple. Most of the behaviour is containe
 
 ## Test commands
 
-The common MQTT control topic uses simple numeric commands:
+The prototype MQTT control topic uses simple numeric commands:
 
 | Command | Action |
 |---|---|
 | `0` | Start 30-minute test |
 | `1` | Start 3-hour test |
-| `2` | Start day test |
+| `2` | Start day / short test |
 | `3` | End 30-minute test |
 | `4` | End 3-hour test |
-| `5` | End day test |
+| `5` | End day / short test |
 
 A separate device-specific topic is used for installation data such as location, customer, floor and light number.
 
 ## Building the project
 
-The project uses **VS Code + PlatformIO** with the Arduino ESP32 framework.
+I used **VS Code + PlatformIO** with the Arduino ESP32 framework.
 
 Before building:
 
 1. Copy `include/secrets.example.h` to `include/secrets.h`.
 2. Add the APN, AWS IoT endpoint, device certificate and private key to `secrets.h`.
-3. Keep `secrets.h` private. It is excluded by `.gitignore`.
-4. Keep `include/certificates.h` as the public root-CA trust-anchor file used by SSLClient.
+3. Copy `include/certificates.example.h` to `include/certificates.h` and populate it with the public root-CA trust anchor required by the SSL client.
+4. Keep `secrets.h` private. It is excluded by `.gitignore`.
+
+The example certificate file contains no private device credentials.
 
 ## Security note
 
-No working private key, AWS device certificate, broker credential or production APN is included in this portfolio version.
+I do not publish a working private key, AWS device certificate, broker credential or production APN in this portfolio version.
+
+## Prototype limitations
+
+The SIM800L was appropriate for the original prototype, but it relies on legacy 2G / GPRS service. For a current design I would reassess the cellular platform and consider LTE-M / NB-IoT or another technology appropriate to the deployment region.
+
+The prototype also relies on cloud-side start and end commands for test timing. For a production design I would add a **local maximum test-duration fail-safe** in firmware so a lost end command cannot leave the relay in test mode indefinitely.
