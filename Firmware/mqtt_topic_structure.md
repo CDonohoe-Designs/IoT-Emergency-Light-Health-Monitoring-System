@@ -1,35 +1,27 @@
-
 # MQTT Topic Structure
 
-This document describes the MQTT topic structure I used in my prototype firmware for the IoT Emergency Light Health Monitoring System.
+I used this topic structure in the prototype firmware for my IoT Emergency Light Health Monitoring System.
 
-My original firmware used an **ESP32** with a **SIM800L cellular modem** to connect to **AWS IoT Core** and exchange MQTT messages for test control, device status and light-level reporting.
+The original design used an **ESP32** with a **SIM800L cellular modem** to connect to **AWS IoT Core** and exchange MQTT messages for test control, device status and light-level reporting.
 
-The production credentials, AWS endpoint, certificates, private keys and APN details are not included in this repository.
+I do not publish production credentials, AWS endpoints, device certificates, private keys or APN details in this repository.
 
----
+## MQTT purpose
 
-## MQTT Purpose
+In my prototype, MQTT was used for:
 
-In my design, MQTT was used for:
+- sending remote test commands to the emergency-light monitor;
+- starting and ending discharge tests;
+- reporting light-level readings;
+- reporting modem signal strength;
+- sending device identity and location metadata; and
+- updating stored device configuration remotely.
 
-- Sending remote test commands to the emergency-light monitor
-- Starting discharge tests
-- Ending discharge tests
-- Reporting light-level readings
-- Reporting modem signal strength
-- Sending device identity and location metadata
-- Updating device configuration fields remotely
+## Device identity
 
----
+In the public firmware I derive the device ID from the ESP32 eFuse hardware ID.
 
-## Device Identity
-
-Each device used a generated unique ID so that individual emergency-light monitors could receive targeted commands.
-
-In the prototype firmware, In the public prototype firmware I derive the device ID from the ESP32's eFuse hardware MAC/ID.
-
-For a production design, I would use a cleaner provisioning method where each device receives a controlled serial number or device certificate identity during manufacturing.
+For a production design I would use a controlled provisioning process so each unit receives a managed device identity and associated credentials during manufacture.
 
 Example placeholder:
 
@@ -37,9 +29,7 @@ Example placeholder:
 <unique_device_id>
 ```
 
----
-
-## Command Topics
+## Command topics
 
 The main prototype command topic was:
 
@@ -47,60 +37,51 @@ The main prototype command topic was:
 esp/output1
 ```
 
-This allowed a cloud-side command to trigger test behaviour across devices.
-
 The device-specific topic was:
 
 ```text
 <unique_device_id>
 ```
 
-This allowed commands to target one device only.
+The common topic was sufficient for proving the end-to-end prototype path. For a production design I would separate commands by device and use a clearer topic hierarchy.
 
----
+## Prototype command payloads
 
-## Prototype Command Payloads
-
-The prototype firmware used simple command payloads to control test states.
-
-| Payload | Intended Action |
+| Payload | Intended action |
 |---|---|
 | `0` | Start 30-minute discharge test |
 | `1` | Start 3-hour discharge test |
-| `2` | Start daily / short monitoring check |
-| `3` | Mark 30-minute test complete / return relay to normal state |
-| `4` | End 3-hour discharge test / return relay to normal state
-| `5` | Mark daily test complete / return relay to normal state |
+| `2` | Start day / short monitoring test |
+| `3` | End 30-minute test and return relay to normal state |
+| `4` | End 3-hour test and return relay to normal state |
+| `5` | End day / short test and return relay to normal state |
 | `restart` | Restart the ESP32 device |
 
-The original firmware used simple single-character commands because the priority at the prototype stage was proving the end-to-end system.
+I used simple single-character commands because the priority at the prototype stage was proving the complete device-to-cloud workflow.
 
-For a production version, I would replace these with structured JSON commands, for example:
+For a production version I would move to structured commands, for example:
 
 ```json
 {
   "command": "start_test",
   "test_type": "quarterly_30_min",
-  "requested_by": "cloud",
   "timestamp": "YYYY-MM-DDTHH:MM:SSZ"
 }
 ```
 
----
+## Configuration update commands
 
-## Configuration Update Commands
+The prototype also accepts simple key/value updates on the device-specific topic.
 
-The prototype firmware also allowed remote updates to stored device configuration values using messages sent to the device-specific topic.
-
-| Command Prefix | Purpose |
+| Prefix | Purpose |
 |---|---|
-| `cus` | Update customer ID |
-| `loc` | Update location ID |
-| `flr` | Update floor ID |
-| `num` | Update emergency-light unit number |
-| `mis` | Update miscellaneous project/customer field |
-| `ver` | Update firmware or hardware version reference |
-| `ins` | Update installation-date reference |
+| `cus` | Customer ID |
+| `loc` | Location ID |
+| `flr` | Floor ID |
+| `num` | Emergency-light unit number |
+| `mis` | Miscellaneous project field |
+| `ver` | Firmware / hardware version reference |
+| `ins` | Installation-date reference |
 
 Example:
 
@@ -108,25 +89,17 @@ Example:
 loc building-a
 ```
 
-The ESP32 stored these values in non-volatile memory so they were retained after reset or power loss.
+The ESP32 stores these values in NVS so they survive reset and power loss.
 
----
+## Published status topic
 
-## Published Status Topic
-
-The firmware published test and sensor data to:
+The firmware publishes test and sensor data to:
 
 ```text
 esp/lightlevel
 ```
 
-This topic carried status data from the device back to the cloud.
-
----
-
-## Example Published Payload
-
-A typical published payload contained:
+A typical payload contains:
 
 ```json
 {
@@ -146,39 +119,19 @@ A typical published payload contained:
 }
 ```
 
----
+The firmware publishes the measurement data. I treat **pass/fail determination as a cloud/reporting function** derived from those measurements.
 
-## Key Data Fields
+## Production improvements
 
-| Field | Meaning |
-|---|---|
-| `ID` | Unique device identity |
-| `Cus` | Customer identifier |
-| `Loc` | Location identifier |
-| `Flr` | Floor identifier |
-| `Num` | Emergency-light unit number |
-| `Time` | Time from modem/network |
-| `Date` | Date from modem/network |
-| `InstallDate` | Stored installation reference |
-| `Misc` | Additional project/customer field |
-| `Ver` | Firmware or hardware version reference |
-| `Test` | Current test state |
-| `Lux` | BH1750 light-level reading |
-| `SigS` | SIM800L cellular signal quality |
+If I were taking the prototype further, I would:
 
----
-
-## Production Improvements
-
-The prototype MQTT design proved the communication path from device to cloud, but I would improve the production version by:
-
-- Replacing simple numeric commands with structured JSON commands
-- Using clearer topic names
-- Adding command acknowledgements
-- Adding error codes and timeout reporting
-- Separating telemetry, command and configuration topics
-- Using controlled device provisioning during manufacturing
-- Avoiding hard-coded credentials or certificates in source code
+- use structured JSON commands;
+- separate telemetry, command, acknowledgement, configuration and status topics;
+- add command acknowledgements and error reporting;
+- use controlled device provisioning;
+- add a local maximum-test timeout / fail-safe;
+- reassess the cellular platform because SIM800L relies on legacy 2G / GPRS service; and
+- keep all private credentials outside source control.
 
 A cleaner production-style topic structure could be:
 
@@ -189,9 +142,3 @@ emergency-light/<device_id>/command/ack
 emergency-light/<device_id>/config
 emergency-light/<device_id>/status
 ```
-
----
-
-## Notes
-
-This document describes the MQTT design intent and prototype behaviour without publishing private credentials, certificates, endpoints or raw prototype source code.
