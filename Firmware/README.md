@@ -65,10 +65,10 @@ Before building:
 
 1. Copy `include/secrets.example.h` to `include/secrets.h`.
 2. Add the APN, AWS IoT endpoint, device certificate and private key to `secrets.h`.
-3. Copy `include/certificates.example.h` to `include/certificates.h` and populate it with the public root-CA trust anchor required by the SSL client.
-4. Keep `secrets.h` private. It is excluded by `.gitignore`.
+3. Provide an `include/certificates.h` file containing the public root-CA trust anchors required by SSLClient / the selected AWS IoT endpoint.
+4. Keep private device credentials out of source control. `secrets.h`, `.key`, `.pem` and `.crt` files are excluded by `.gitignore`.
 
-The example certificate file contains no private device credentials.
+The repository includes `docs/certificates_note.md` to explain the expected `certificates.h` role without publishing account-specific or private credential material.
 
 ## Security note
 
