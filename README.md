@@ -8,6 +8,33 @@ The prototype combines an **ESP32**, **SIM800L GPRS modem**, **BH1750 lux sensor
 
 ![Assembled Emergency Exit Light Health Checker prototype](Hardware/Images/Assembled_Prototype_Board.jpg)
 
+## 2-Minute Engineering Review
+
+I developed this as a complete **embedded IoT hardware prototype**, taking the concept through electronics design, PCB implementation, firmware, cellular communications, cloud reporting and installation in a real emergency-light fitting.
+
+### Engineering focus
+
+- **System architecture** — emergency-light test switching, sensing, embedded control and remote reporting
+- **Mixed-voltage hardware** — mains/relay circuitry deliberately separated from the low-voltage ESP32, modem and sensor sections
+- **Embedded firmware** — ESP32 control, BH1750 measurement, relay operation, NVS configuration and MQTT payload generation
+- **Cellular integration** — SIM800L GPRS modem and secure MQTT connection to AWS IoT
+- **Power architecture** — AC/DC conversion with dedicated 5 V, 4.1 V and 3.3 V rails
+- **Prototype implementation** — schematic, PCB, assembly, installation and representative test-data collection
+- **Engineering judgement** — current limitations and production improvements are documented rather than presenting the prototype as a finished product
+
+### Quick review
+
+- **[As-built schematic](Hardware/Schematic/Schematic_ESP32_AC_SIM800L_AsBuilt_Prototype.pdf)**
+- **[PCB / manufacturing evidence](Hardware/PCB/)**
+- **[Assembled and installed prototype](Hardware/Images/)**
+- **[Firmware source](Firmware/src/main.cpp)**
+- **[Cloud / MQTT reporting flow](Cloud/)**
+- **[Example test data](Data/)**
+
+> **Current status:** manufactured, assembled and installed prototype demonstrated the core concept. Formal product safety, EMC, reliability and regulatory work are not presented as completed activities.
+
+---
+
 ## What the system does
 
 Emergency lights require periodic testing to confirm that the battery can keep the fitting illuminated during a simulated loss-of-mains condition.
