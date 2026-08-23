@@ -1,120 +1,157 @@
-# Emergency Exit Light Health Checker
+# IoT Emergency Light Health Monitoring System
 
-I developed an IoT retrofit module I developed to automate emergency exit-light testing and remote reporting.
+I developed this project as a retrofit **emergency-light health checker** that could automate discharge testing, measure light output and report test data remotely over a cellular connection.
+
+The prototype combines an **ESP32**, **SIM800L GPRS modem**, **BH1750 lux sensor**, relay-controlled test switching and an **AWS IoT / MQTT** reporting path. I designed the hardware, PCB and firmware, assembled the prototype and tested the retrofit concept in an emergency-light fitting.
+
+> **Status:** completed prototype / portfolio project. This repository documents the engineering work; it is not a certified product design, installation guide or safety-approved release package.
 
 ![Assembled Emergency Exit Light Health Checker prototype](Hardware/Images/Assembled_Prototype_Board.jpg)
 
+## What the system does
 
-The system was designed to be retrofitted into an existing emergency light unit. Test cycles could be initiated remotely over the cellular GPRS link using cloud-side scheduling/AWS IoT MQTT messaging. Once triggered, the ESP32 controlled a relay to place the fitting into test mode, measured the light output during the battery discharge period, and returned lux level, signal strength, timestamp and pass/fail data to the cloud backend for reporting.
+Emergency lights require periodic testing to confirm that the battery can keep the fitting illuminated during a simulated loss-of-mains condition.
 
+I designed the prototype to:
 
----
+- place the emergency-light fitting into a controlled test state using a relay;
+- measure light output with a BH1750 digital lux sensor;
+- use an ESP32 as the main controller;
+- communicate through a SIM800L cellular modem;
+- publish lux level, mobile signal strength, timestamp, test type and installation metadata over MQTT;
+- support cloud-side scheduling and processing using AWS IoT services; and
+- provide the measurement data needed by the backend to derive maintenance / pass-fail results.
 
-## Project Summary
+The public firmware and example payloads show the measured test data sent by the device. Pass/fail evaluation is treated as a **cloud/reporting function**, rather than a field generated directly by the ESP32 firmware.
 
-Emergency exit lights normally require periodic testing to confirm that the internal battery can keep the fitting illuminated during a power-loss condition.
+## System architecture
 
-I designed a prototype health-check module that could automate this process by:
+```text
+Emergency-light fitting
+        |
+        v
+ Relay-controlled test switching
+        |
+        +----------------------+
+        |                      |
+        v                      v
+      ESP32                 BH1750
+        |                 lux measurement
+        |
+        v
+     SIM800L
+   GPRS / cellular
+        |
+        v
+   MQTT / AWS IoT
+        |
+        v
+ Test-data storage / processing / reporting
+```
 
-- switching the fitting into test mode using a relay
-- measuring light output using a BH1750 light sensor
-- using an ESP32 as the main controller
-- sending test data over GPRS using a SIM800L modem
-- reporting lux level, signal strength, date/time and pass/fail result
-- supporting cloud-side processing using AWS IoT/MQTT services
+## Hardware
 
----
+The prototype hardware includes:
 
-## My work included:
-
-- system concept and architecture
-- schematic design
-- PCB layout and manufacturing outputs
-- ESP32, SIM800L and BH1750 integration
-- relay-controlled emergency-light test switching
-- 5 V, 3.3 V and 4.1 V power sections
-- UART and I²C interfaces
-- prototype assembly and installation testing
-- AWS/MQTT reporting concept
-- example test dataset and reporting flow
-
----
-
-## Safety and Portfolio Note
-
-This project involved mains-voltage switching and was developed as a prototype/portfolio engineering project. The repository is provided as evidence of my independent electronic design work and is not intended as a certified product design, installation guide or safety-approved design package.
-
-## System Overview
-
-The module monitors the health of an emergency exit light by placing the fitting into a controlled test state and measuring the resulting light output.
-
-Typical test modes included:
-
-- short functional test
-- 30-minute discharge test
-- 3-hour discharge test
-
-The measured data was sent to the cloud and could be used to generate a pass/fail report.
-
----
-
-## Hardware Overview
-
-Main hardware blocks:
-
-| Block | Description |
+| Block | Implementation |
 |---|---|
 | Controller | ESP32 WROOM module |
 | Cellular modem | SIM800L GPRS module |
 | Light sensor | BH1750 digital lux sensor |
-| Switching | Relay-controlled AC test switching |
-| Power | AC/DC converter, 5 V rail, 3.3 V rail and 4.1 V modem rail |
-| Interfaces | UART, I²C, external GPIO/I²C connector |
-| Debug/programming | UART programming header, reset and boot buttons |
+| Test switching | Relay-controlled emergency-light test circuit |
+| Power | AC/DC conversion with 5 V, 3.3 V and 4.1 V rails |
+| Interfaces | UART, I²C and external expansion/debug connections |
 
----
+I separated the mains/relay area from the low-voltage controller, sensor and modem circuitry in the PCB layout and carried the design through to a manufactured and assembled prototype.
 
-## PCB and Manufacturing Evidence
+- **[As-built prototype schematic](Hardware/Schematic/Schematic_ESP32_AC_SIM800L_AsBuilt_Prototype.pdf)**
+- **[Hardware / PCB evidence](Hardware/PCB/)**
+- **[Prototype and installation images](Hardware/Images/)**
 
-The project includes evidence of:
+I also explored a later design variant with the cellular modem integrated directly onto the PCB. I keep that clearly separated from the as-built prototype evidence:
 
-- schematic design
-- PCB top and bottom layers
-- Gerber/layer views
-- panelised PCB output
-- assembled prototype hardware
-- installed prototype inside an emergency light fitting
+- **[Integrated SIM800C design variant](Hardware/Schematic/Design_Variants/Schematic_ESP32_SIM800C_OnPCB_Concept.pdf)**
 
-Images and PDFs are included in the `Hardware/` and `Documentation/` folders.
+## Firmware
 
----
+I developed the public portfolio firmware using **ESP32 + Arduino framework + PlatformIO**. It demonstrates the main prototype behaviour:
 
-## Cloud / Data Flow
+- SIM800 cellular connection;
+- secure MQTT connection to AWS IoT;
+- BH1750 light measurement;
+- relay test control;
+- storage of installation details in ESP32 NVS;
+- remote configuration commands; and
+- JSON-style test-result publishing.
 
-The prototype used a cloud reporting concept based around:
+Private AWS credentials, device certificates, private keys and production APN details are not included.
 
-- MQTT messaging
-- AWS IoT Core
-- AWS Lambda
-- IoT Analytics-style processing
-- stored test data
-- pass/fail report generation
+- **[Firmware source](Firmware/src/main.cpp)**
+- **[Firmware notes and build instructions](Firmware/README.md)**
+- **[MQTT topic structure](Firmware/mqtt_topic_structure.md)**
 
-Example payload format:
+## Cloud / data flow
+
+The prototype used a cloud-reporting flow based around cellular MQTT messaging and AWS IoT services. The device publishes test measurements and installation metadata; the cloud side can then store, process and report the results.
+
+A representative device payload contains fields such as:
 
 ```json
 {
   "ID": "REDACTED_DEVICE_ID",
   "Cus": "REDACTED_CUSTOMER",
   "Loc": "REDACTED_LOCATION",
-  "Time": "16:05:40+04",
-  "Date": "22/09/22",
   "Test": "30m",
   "Lux": 154.2,
   "SigS": 15
 }
 ```
----
-## Safety and Portfolio Note
 
-This project involved mains-voltage switching and was developed as a prototype/portfolio engineering project. The repository is provided as evidence of my independent electronic design work and is not intended as a certified product design, installation guide or safety-approved design package.
+- **[Cloud / MQTT reporting flow](Cloud/)**
+- **[Redacted example payload](Cloud/Example_JSON_Payload_Redacted.md)**
+- **[Redacted example test data](Data/)**
+
+## Bring-up and test approach
+
+I treated the project as a complete embedded system rather than only a PCB exercise. My work covered:
+
+- system concept and architecture;
+- schematic design and PCB layout;
+- mains/low-voltage partitioning;
+- ESP32, SIM800L and BH1750 integration;
+- relay-controlled emergency-light testing;
+- prototype assembly and installation;
+- firmware development;
+- MQTT / AWS IoT integration; and
+- collection of representative test data.
+
+The repository includes PCB-layer views, Gerber/manufacturing evidence, the assembled board, an installed prototype, firmware and cloud/data documentation.
+
+## Prototype limitations and future improvements
+
+The design reflects the technology and goals of the original prototype. If I were developing a current production version, I would revisit several areas:
+
+- replace the legacy **2G/GPRS SIM800L** with a current cellular technology such as LTE-M / NB-IoT where appropriate;
+- add a **local maximum test-duration fail-safe** so loss of a cloud-side end command cannot leave the relay in test mode indefinitely;
+- replace simple numeric MQTT commands with structured command messages and acknowledgements;
+- use controlled manufacturing provisioning for device identity and credentials;
+- complete formal safety, EMC, reliability and regulatory work before any product release; and
+- define production test, installation and service procedures.
+
+These are deliberately presented as future engineering steps rather than claims about the prototype.
+
+## Repository structure
+
+```text
+IoT-Emergency-Light-Health-Monitoring-System/
+├── Cloud/          # AWS IoT / MQTT reporting evidence
+├── Data/           # redacted example test data
+├── Documentation/  # project overview material
+├── Firmware/       # public ESP32 / PlatformIO portfolio firmware
+├── Hardware/       # schematic, PCB and prototype evidence
+└── README.md
+```
+
+## Safety and portfolio note
+
+This prototype involved **mains-voltage switching**. I include the repository as evidence of my electronic design, embedded firmware, PCB, IoT and system-integration work. It should not be treated as an installation guide, certified emergency-light controller or safety-approved production design.
